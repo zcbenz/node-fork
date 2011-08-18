@@ -1,0 +1,4 @@
+Deal with exceptions thrown from the synchorous functions.
+Catch exceptions of JSON.stringify.
+Make a better way to serialize objects.
+Unit tests

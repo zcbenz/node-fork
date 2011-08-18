@@ -104,7 +104,7 @@ require("http").createServer(function (req, res) {
 
 ## Why this when already have asynchronous calls in node
 
- In node days, if we want to a chain of asynchronous calls, we would end up
+ In node days, if we want a chain of asynchronous calls, we would end up
  with something like this:
 
 ```javascript
@@ -120,7 +120,7 @@ fs.readFile ("a", function (err, data) {
     });
 });
 ```
- In one word, disaster.
+ In one word, DISASTER.
 
  But with `node-fork`, we can use the synchronous functions just like the
  good old days:
@@ -207,12 +207,12 @@ async (function () {
  The PID of the child process is returned in the parent, and
  0 is returned in the child.
 
-## BUGS
+## BUG
 
  The project is not done yet, it has bugs and no unit tests, and it will
  crash when `call` throws exceptions...
 
- And `node-curl` uses processs instead of threads to invoke the `call`,
+ And `node-curl` uses processes instead of threads to invoke the `call`,
  it will be a bit resource-consuming, this is because v8 engine does not
  support threads good enough. When v8 finally supports threads, I will
  make an equivalent threading one.
