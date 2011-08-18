@@ -1,49 +1,3 @@
-# node-fork
- 
- In short, `node-fork` makes a synchronous function asynchronous.
-
- In longer words, `node-fork` makes uses of `fork` system call to provide
- concurrency ability to the node.js, it can make a synchronous function
- really-asynchronous, thus completely get rid of the nested asynchronous
- calls.
-
-## At a glance
-
-### calculate_the_answer_to_LtUaE.js
-
-```javascript
-var sleep  = require("../fork").sleep;
-var future = require("../fork").future;
-
-function calculate_the_answer_to_LtUaE () {
-    sleep (5);
-
-    return 42;
-}
-
-var answer = future (calculate_the_answer_to_LtUaE);
-
-console.log ("blablabla...");
-
-console.log ("The answer to life, the universe and everything is",
-             answer.get ());
-```
-
-### propagate.js
-
-```javascript
-var fork = require("../fork").fork;
-
-for (var i = 0; i < 5; i++) {
-    fork ();
-
-    console.log (i);
-};
-```
-
-### lots_of_websites.js
-
-```javascript
 // You will need node-curl to gain synchorous http ability
 // at https://github.com/zcbenz/node-curl
 
@@ -98,4 +52,3 @@ async (function () {
 // Just to block the main process
 require("http").createServer(function (req, res) {
 }).listen(9001);
-```
