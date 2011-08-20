@@ -1,5 +1,5 @@
 # node-fork
- 
+
  In short, `node-fork` makes a synchronous function asynchronous.
 
  In longer words, `node-fork` makes uses of `fork` system call to provide
@@ -137,11 +137,15 @@ async (function () {
 });
 ```
 
+## Build
+
+ Just simply `make`.
+
 ## APIs
 
 ### future (call)
 
- `future()` will invoke the `call` function in a new process by calling 
+ `future()` will invoke the `call` function in a new process by calling
  `fork()`. The `call` function will have the exact state with the parent
  process.
 
@@ -169,11 +173,11 @@ console.log ("The answer to life, the universe and everything is",
 
 ### async (call, [back])
 
- `async()` will invoke the `call` function in a new process by calling 
+ `async()` will invoke the `call` function in a new process by calling
  `fork()`. The `call` function will have the exact state with the parent
  process.
- 
- After the `call` function ended, the `back` function will be invoked, 
+
+ After the `call` function ended, the `back` function will be invoked,
  the return value of `call` function will be passed as a parameter in the
  `back`.
 
@@ -190,7 +194,7 @@ async (function () {
 ```
 
 ### sleep (seconds)
- 
+
  Same with `man 3 sleep`.
 
  `sleep()` makes the calling process sleep until `seconds` seconds have
