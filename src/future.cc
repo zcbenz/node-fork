@@ -1,5 +1,5 @@
 #include "future.h"
-#include "async.h"
+#include "process.h"
 
 #include <errno.h>
 #include <string.h>
@@ -19,7 +19,7 @@ Handle<Value> Future (const Arguments& args) {
     if (args.Length () == 1 && !args[0]->IsFunction ())
         return THROW_BAD_ARGS ;
 
-    Process *process = BeforeAsync (args);
+    Process *process = Process::New (args);
     if (!process)
         return ThrowException (Exception::Error (
                     String::New (strerror (errno))));
@@ -29,10 +29,10 @@ Handle<Value> Future (const Arguments& args) {
 
     Handle<Object> future = tpl->NewInstance ();
     future->SetPointerInInternalField (0, process);
-    future->Set (String::New ("pid"), Integer::New (process->pid));
+    future->Set (String::New ("pid"), Integer::New (process->Pid ()));
     future->Set (String::New ("get"), FunctionTemplate::New (get)->GetFunction ());
 
-    // We won't wait for child until client calls future.get
+    // We won't wait for child until client calls `future.get()`
 
     return scope.Close (future);
 }
@@ -47,21 +47,15 @@ static Handle<Value> get (const Arguments& args) {
         return THROW_BAD_PROCESS;
 
     // Wait form child
-    waitpid (process->pid, NULL, 0);
+    waitpid (process->Pid (), NULL, 0);
 
-    // Must make sure every byte is drained 
-    while (drain_read (process->pipe[0], process) > 0)
-        ;
+    // Get result
+    Handle<Object> result = process->End ();
 
-    // Translate result to v8::Value
-    Handle<Value> result = FromJsonString (
-        &process->buffer[0], process->buffer.size ());
-
-    // Must clean it
-    delete process;
+    // Mark as ended
     args.Holder ()->SetPointerInInternalField (0, NULL);
 
-    return scope.Close (result);
+    return scope.Close (result->Get (String::New ("data")));
 }
 
 }

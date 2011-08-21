@@ -24,7 +24,7 @@ vows.describe('async').addBatch({
             }, this.callback);
         },
 
-        'returns 42': function (result, err) {
+        'returns 42': function (result) {
             assert.deepEqual (result, { "test": 42 });
         }
     }
