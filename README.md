@@ -220,3 +220,8 @@ async (function () {
  it will be a bit resource-consuming, this is because v8 engine does not
  support threads good enough. When v8 finally supports threads, I will
  make an equivalent threading one.
+
+## License
+ 
+ All codes are published under MIT license.
+  
