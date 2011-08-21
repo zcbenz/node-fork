@@ -102,13 +102,13 @@ Process::~Process () {
 Handle<Object> Process::End () {
     HandleScope scope;
 
-    // Must make sure every byte is drained 
+    // Must make sure every byte is drained
     Drain ();
 
     // Translate result to v8::Value
     Handle<Object> result = Handle<Object>::Cast (
         FromJsonString (&buffer_[0], buffer_.size ()));
-    
+
     // Send to the `back` callback
     Handle<Value> args[1] = { result->Get (String::New ("data")) };
     back->Call (Context::GetCurrent()->Global(), 1, args);

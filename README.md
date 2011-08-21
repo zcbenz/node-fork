@@ -102,6 +102,24 @@ require("http").createServer(function (req, res) {
 }).listen(9001);
 ```
 
+### sleeping_pigs.js
+
+```javascript
+var sleep = require("../fork").sleep;
+var async = require("../fork").async;
+
+for (var i = 0; i < 10; ++i) {
+    async (function () {
+        sleep (i);
+        console.warn ("Pig " + i + " awakes!");
+    });
+}
+
+// Just to block the main process
+require("http").createServer(function (req, res) {
+}).listen(9001);
+```
+
 ## Why this when already have asynchronous calls in node
 
  In node days, if we want a chain of asynchronous calls, we would end up

@@ -24,8 +24,20 @@ vows.describe('async').addBatch({
             }, this.callback);
         },
 
-        'returns 42': function (result) {
+        'returns 42': function (result, err) {
             assert.deepEqual (result, { "test": 42 });
+        }
+    },
+
+    'throw in call': {
+        topic: function () {
+            async (function () {
+                throw 42;
+            }, this.callback);
+        },
+
+        'result should be undefined': function (result, err) {
+            assert.equal (result, undefined);
         }
     }
 }).export(module);
