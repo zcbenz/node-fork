@@ -62,7 +62,7 @@ Process* BeforeAsync (const Arguments& args) {
             FunctionTemplate::New ()->GetFunction () :
             Handle<Function>::Cast (args[1]);
 
-        return new Process (pid, pipefd, back);
+        return new Process (pid, pipefd, back, args.Holder ());
     }
 }
 
@@ -92,19 +92,36 @@ Handle<String> ToJsonString (Handle<Value> value) {
     Handle<Context> context = Context::New ();
     Context::Scope context_scope (context);
     context->Global()->Set (String::New ("s"), value);
+
+    TryCatch try_catch;
     Handle<Script> script = Script::Compile (
             String::New ("JSON.stringify(s);"));
+    // Compilation error
+    if (script.IsEmpty ()) {
+        return String::New ("undefined");
+    }
+
     Handle<String> result = Handle<String>::Cast (script->Run());
+    // Runtime error
+    if (result.IsEmpty ()) {
+        return String::New ("undefined");
+    }
 
     return scope.Close (result);
 }
 
-Handle<Value> FromJsonString (Handle<String> value) {
+Handle<Value> FromJsonString (const char *str, size_t length) {
     HandleScope scope;
 
+    // Can not parse `undefined`
+    if (!strncmp (str, "undefined", length)) {
+        return scope.Close (Undefined ());
+    }
+
+    // `JSON.parse` now
     Handle<Context> context = Context::New ();
     Context::Scope context_scope (context);
-    context->Global()->Set (String::New ("s"), value);
+    context->Global()->Set (String::New ("s"), String::New (str, length));
     Handle<Script> script = Script::Compile (
             String::New ("JSON.parse(s);"));
 
@@ -152,10 +169,10 @@ static void child_watcher (EV_P_ ev_child *w, int revents) {
 
     // Translate result to v8::Value
     Handle<Value> result = FromJsonString (
-        String::New (&process->buffer[0], process->buffer.size ()));
+        &process->buffer[0], process->buffer.size ());
 
     Handle<Value> args[1] = { result };
-    process->back->Call (Object::New (), 1, args);
+    process->back->Call (process->holder, 1, args);
 
     // Must clean it
     ev_child_stop (EV_A_ w);
@@ -163,8 +180,9 @@ static void child_watcher (EV_P_ ev_child *w, int revents) {
 }
 
 // An Process instance
-Process::Process (pid_t pid, int *pipefd, Handle<Function> back)
+Process::Process (pid_t pid, int *pipefd, Handle<Function> back, Handle<Object> holder)
     : back (Persistent<Function>::New (back)),
+      holder (Persistent<Object>::New (holder)),
       pid (pid)
 {
     cw.data    = this;
@@ -180,6 +198,7 @@ Process::Process (pid_t pid, int *pipefd, Handle<Function> back)
 Process::~Process () {
     close (pipe[0]);
     back.Dispose ();
+    holder.Dispose ();
     ev_io_stop (EV_DEFAULT_ &eread);
 }
 

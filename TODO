@@ -1,4 +1,3 @@
-Deal with exceptions thrown from the synchorous functions.
-Catch exceptions of JSON.stringify.
+Let the caller know when `call` throws
 Make a better way to serialize objects.
 Unit tests

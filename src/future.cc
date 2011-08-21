@@ -55,7 +55,7 @@ static Handle<Value> get (const Arguments& args) {
 
     // Translate result to v8::Value
     Handle<Value> result = FromJsonString (
-        String::New (&process->buffer[0], process->buffer.size ()));
+        &process->buffer[0], process->buffer.size ());
 
     // Must clean it
     delete process;

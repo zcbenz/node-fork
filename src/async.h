@@ -8,11 +8,12 @@ Handle<Value> Async (const Arguments& args);
 
 // An Process instance
 struct Process {
-    Process (pid_t pid, int *pipefd, Handle<Function> back);
+    Process (pid_t pid, int *pipefd, Handle<Function> back, Handle<Object> holder);
 
     ~Process (); 
 
     Persistent<Function> back;
+    Persistent<Object> holder;
 
     int pid;
     int pipe[2];
@@ -26,6 +27,6 @@ struct Process {
 Process* BeforeAsync (const Arguments& args);
 ssize_t drain_read (int fd, Process *process);
 Handle<String> ToJsonString (Handle<Value> value);
-Handle<Value> FromJsonString (Handle<String> value);
+Handle<Value> FromJsonString (const char *str, size_t length);
 
 }
