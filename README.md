@@ -126,19 +126,26 @@ require("http").createServer(function (req, res) {
  with something like this:
 
 ```javascript
-fs.readFile ("a", function (err, data) {
-    data += "blabla";
-    fs.writeFile ("b", data, function (err) {
-        fs.readFile ("c", function (err, data) {
-            data += "blabla";
-            fs.writeFile ("d", data, function (err) {
-                console.log ("finally", data);
-            });
-        });
-    });
-});
+function onFileD(err) {
+  console.log ("finally", data);
+}
+
+function onFileC(err, data) {
+  data += "blabla";
+  fs.writeFile ("d", data, onFileD);
+}
+ 
+function onFileB(err) {
+ fs.readFile ("c", onFileC);
+}
+
+function onFileA(err, data) {
+  data += "blabla";
+  fs.writeFile ("b", data, onFileB);
+}
+
+fs.readFile ("a", onFileA);
 ```
- In one word, DISASTER.
 
  But with `node-fork`, we can use the synchronous functions just like the
  good old days:
